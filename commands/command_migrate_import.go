@@ -15,6 +15,7 @@ import (
 	"github.com/git-lfs/git-lfs/v3/git/gitattr"
 	"github.com/git-lfs/git-lfs/v3/git/githistory"
 	"github.com/git-lfs/git-lfs/v3/lfs"
+	"github.com/git-lfs/git-lfs/v3/nixhacks"
 	"github.com/git-lfs/git-lfs/v3/tasklog"
 	"github.com/git-lfs/git-lfs/v3/tools"
 	"github.com/git-lfs/git-lfs/v3/tools/humanize"
@@ -110,7 +111,7 @@ func migrateImportCommand(cmd *cobra.Command, args []string) {
 			ExitWithError(errors.Wrap(err, tr.Tr.Get("Unable to write commit")))
 		}
 
-		if err := git.UpdateRef(ref, oid, "git lfs migrate import --no-rewrite"); err != nil {
+		if err := git.UpdateRef(ref, oid, nixhacks.SelfPath+" migrate import --no-rewrite"); err != nil {
 			ExitWithError(errors.Wrap(err, tr.Tr.Get("Unable to update ref")))
 		}
 

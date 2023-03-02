@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/git-lfs/git-lfs/v3/nixhacks"
 	"github.com/git-lfs/git-lfs/v3/subprocess"
 	"github.com/git-lfs/git-lfs/v3/tr"
 
@@ -119,7 +120,7 @@ func postCloneSubmodules(args []string) error {
 	// Also good to call a new instance of git-lfs rather than do things
 	// inside this instance, since that way we get a clean env in that subrepo
 	cmd, err := subprocess.ExecCommand("git", "submodule", "foreach", "--recursive",
-		"git lfs pull")
+		nixhacks.SelfPath+" pull")
 	if err != nil {
 		return err
 	}

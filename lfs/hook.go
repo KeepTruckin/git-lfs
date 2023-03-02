@@ -10,6 +10,7 @@ import (
 
 	"github.com/git-lfs/git-lfs/v3/config"
 	"github.com/git-lfs/git-lfs/v3/errors"
+	"github.com/git-lfs/git-lfs/v3/nixhacks"
 	"github.com/git-lfs/git-lfs/v3/tools"
 	"github.com/git-lfs/git-lfs/v3/tr"
 	"github.com/rubyist/tracerx"
@@ -17,9 +18,9 @@ import (
 
 var (
 	// The basic hook which just calls 'git lfs TYPE'
-	hookBaseContent = "#!/bin/sh\ncommand -v git-lfs >/dev/null 2>&1 || { echo >&2 \"\\nThis repository is configured for Git LFS but 'git-lfs' was not found on your path. If you no longer wish to use Git LFS, remove this hook by deleting the '{{Command}}' file in the hooks directory (set by 'core.hookspath'; usually '.git/hooks').\\n\"; exit 2; }\ngit lfs {{Command}} \"$@\""
-	hookOldContent  = "#!/bin/sh\ncommand -v git-lfs >/dev/null 2>&1 || { echo >&2 \"\\nThis repository is configured for Git LFS but 'git-lfs' was not found on your path. If you no longer wish to use Git LFS, remove this hook by deleting '.git/hooks/{{Command}}'.\\n\"; exit 2; }\ngit lfs {{Command}} \"$@\""
-	hookOldContent2 = "#!/bin/sh\ncommand -v git-lfs >/dev/null 2>&1 || { echo >&2 \"\\nThis repository is configured for Git LFS but 'git-lfs' was not found on your path. If you no longer wish to use Git LFS, remove this hook by deleting .git/hooks/{{Command}}.\\n\"; exit 2; }\ngit lfs {{Command}} \"$@\""
+	hookBaseContent = "#!/bin/sh\ncommand -v " + nixhacks.SelfPath + " >/dev/null 2>&1 || { echo >&2 \"\\nThis repository is configured for Git LFS but 'git-lfs' was not found on your path. If you no longer wish to use Git LFS, remove this hook by deleting the '{{Command}}' file in the hooks directory (set by 'core.hookspath'; usually '.git/hooks').\\n\"; exit 2; }\n" + nixhacks.SelfPath + " {{Command}} \"$@\""
+	hookOldContent  = "#!/bin/sh\ncommand -v " + nixhacks.SelfPath + " >/dev/null 2>&1 || { echo >&2 \"\\nThis repository is configured for Git LFS but 'git-lfs' was not found on your path. If you no longer wish to use Git LFS, remove this hook by deleting '.git/hooks/{{Command}}'.\\n\"; exit 2; }\n" + nixhacks.SelfPath + " {{Command}} \"$@\""
+	hookOldContent2 = "#!/bin/sh\ncommand -v " + nixhacks.SelfPath + " >/dev/null 2>&1 || { echo >&2 \"\\nThis repository is configured for Git LFS but 'git-lfs' was not found on your path. If you no longer wish to use Git LFS, remove this hook by deleting .git/hooks/{{Command}}.\\n\"; exit 2; }\n" + nixhacks.SelfPath + " {{Command}} \"$@\""
 )
 
 // A Hook represents a githook as described in http://git-scm.com/docs/githooks.
@@ -36,11 +37,11 @@ type Hook struct {
 func LoadHooks(hookDir string, cfg *config.Configuration) []*Hook {
 	return []*Hook{
 		NewStandardHook("pre-push", hookDir, []string{
-			"#!/bin/sh\ngit lfs push --stdin $*",
-			"#!/bin/sh\ngit lfs push --stdin \"$@\"",
-			"#!/bin/sh\ngit lfs pre-push \"$@\"",
-			"#!/bin/sh\ncommand -v git-lfs >/dev/null 2>&1 || { echo >&2 \"\\nThis repository has been set up with Git LFS but Git LFS is not installed.\\n\"; exit 0; }\ngit lfs pre-push \"$@\"",
-			"#!/bin/sh\ncommand -v git-lfs >/dev/null 2>&1 || { echo >&2 \"\\nThis repository has been set up with Git LFS but Git LFS is not installed.\\n\"; exit 2; }\ngit lfs pre-push \"$@\"",
+			"#!/bin/sh\n" + nixhacks.SelfPath + " push --stdin $*",
+			"#!/bin/sh\n" + nixhacks.SelfPath + " push --stdin \"$@\"",
+			"#!/bin/sh\n" + nixhacks.SelfPath + " pre-push \"$@\"",
+			"#!/bin/sh\ncommand -v " + nixhacks.SelfPath + " >/dev/null 2>&1 || { echo >&2 \"\\nThis repository has been set up with Git LFS but Git LFS is not installed.\\n\"; exit 0; }\n" + nixhacks.SelfPath + " pre-push \"$@\"",
+			"#!/bin/sh\ncommand -v " + nixhacks.SelfPath + " >/dev/null 2>&1 || { echo >&2 \"\\nThis repository has been set up with Git LFS but Git LFS is not installed.\\n\"; exit 2; }\n" + nixhacks.SelfPath + " pre-push \"$@\"",
 			hookOldContent,
 			hookOldContent2,
 		}, cfg),

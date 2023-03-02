@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/git-lfs/git-lfs/v3/git"
+	"github.com/git-lfs/git-lfs/v3/nixhacks"
 	"github.com/git-lfs/git-lfs/v3/tr"
 )
 
@@ -52,24 +53,24 @@ func filterAttribute() *Attribute {
 	return &Attribute{
 		Section: "filter.lfs",
 		Properties: map[string]string{
-			"clean":    "git-lfs clean -- %f",
-			"smudge":   "git-lfs smudge -- %f",
-			"process":  "git-lfs filter-process",
+			"clean":    nixhacks.SelfPath + " clean -- %f",
+			"smudge":   nixhacks.SelfPath + " smudge -- %f",
+			"process":  nixhacks.SelfPath + " filter-process",
 			"required": "true",
 		},
 		Upgradeables: map[string][]string{
 			"clean": []string{
-				"git-lfs clean %f",
+				nixhacks.SelfPath + " clean %f",
 			},
 			"smudge": []string{
-				"git-lfs smudge %f",
-				"git-lfs smudge --skip %f",
-				"git-lfs smudge --skip -- %f",
+				nixhacks.SelfPath + " smudge %f",
+				nixhacks.SelfPath + " smudge --skip %f",
+				nixhacks.SelfPath + " smudge --skip -- %f",
 			},
 			"process": []string{
-				"git-lfs filter",
-				"git-lfs filter --skip",
-				"git-lfs filter-process --skip",
+				nixhacks.SelfPath + " filter",
+				nixhacks.SelfPath + " filter --skip",
+				nixhacks.SelfPath + " filter-process --skip",
 			},
 		},
 	}
@@ -79,24 +80,24 @@ func skipSmudgeFilterAttribute() *Attribute {
 	return &Attribute{
 		Section: "filter.lfs",
 		Properties: map[string]string{
-			"clean":    "git-lfs clean -- %f",
-			"smudge":   "git-lfs smudge --skip -- %f",
-			"process":  "git-lfs filter-process --skip",
+			"clean":    nixhacks.SelfPath + " clean -- %f",
+			"smudge":   nixhacks.SelfPath + " smudge --skip -- %f",
+			"process":  nixhacks.SelfPath + " filter-process --skip",
 			"required": "true",
 		},
 		Upgradeables: map[string][]string{
 			"clean": []string{
-				"git-lfs clean -- %f",
+				nixhacks.SelfPath + " clean -- %f",
 			},
 			"smudge": []string{
-				"git-lfs smudge %f",
-				"git-lfs smudge --skip %f",
-				"git-lfs smudge -- %f",
+				nixhacks.SelfPath + " smudge %f",
+				nixhacks.SelfPath + " smudge --skip %f",
+				nixhacks.SelfPath + " smudge -- %f",
 			},
 			"process": []string{
-				"git-lfs filter",
-				"git-lfs filter --skip",
-				"git-lfs filter-process",
+				nixhacks.SelfPath + " filter",
+				nixhacks.SelfPath + " filter --skip",
+				nixhacks.SelfPath + " filter-process",
 			},
 		},
 	}
