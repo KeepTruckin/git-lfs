@@ -1,0 +1,21 @@
+name: "CodeQL PR Scan"
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, synchronize]
+    # branches: [master, main]
+
+jobs:
+  codeql-pr:
+    # Skip draft PRs. Event coverage:
+    #   opened/reopened  — scans PRs immediately on creation (non-draft only, draft guard applies)
+    #   ready_for_review — fires on draft→ready transition (always non-draft, guard is belt-and-suspenders)
+    #   synchronize      — fires on every new push, including to drafts (guard prevents those)
+    if: ${{ !github.event.pull_request.draft }}
+    uses: KeepTruckin/security-scanners/.github/workflows/codeql-pr-scan.yml@master
+    secrets: inherit
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+      packages: read
