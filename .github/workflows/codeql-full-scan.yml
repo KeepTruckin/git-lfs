@@ -1,0 +1,23 @@
+name: "CodeQL Full Scan"
+
+on:
+  schedule:
+    - cron: '0 1 * * *'  # Daily at 01:00 UTC — adjust as needed
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch or tag to scan (leave empty for default branch)'
+        required: false
+        default: ''
+
+jobs:
+  codeql-full:
+    uses: KeepTruckin/security-scanners/.github/workflows/codeql-full-scan.yml@master
+    with:
+      ref: ${{ inputs.ref || '' }}
+    secrets: inherit
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+      packages: read
